@@ -1,46 +1,49 @@
 <html style=""><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>The Kudoku Sudoku Solver</title>
-<script language="javascript" src="kudoku.js"></script>
+<script language="javascript" src="sudoku_web.js"></script>
 <script language="javascript"><!--
-var solver = sudoku_solver();
 
 function solve() {
-	// solve the puzzles in the textarea
-	var s = document.getElementById('text').value.split("\n")
-	var v = '', time_beg = new Date().getTime(), cnt = 0;
-	for (var i = 0; i < s.length; ++i) {
-		if (s[i].length >= 81) {
-			var x = solver(s[i])
-			v += x[0].join('') + "\n" // output the first solution only
-			++cnt;
+	Rust.sudoku_web.then( function ( sudoku_web ) {
+		var solver = sudoku_web.solve;
+		// solve the puzzles in the textarea
+		var s = document.getElementById('text').value.split("\n")
+		var v = '', time_beg = new Date().getTime(), cnt = 0;
+		for (var i = 0; i < s.length; ++i) {
+			if (s[i].length >= 81) {
+				var x = solver(s[i])
+				v += x[0].join('') + "\n" // output the first solution only
+				++cnt;
+			}
 		}
-	}
-	document.getElementById('text').value = v
-	var t = (new Date().getTime() - time_beg)/1000.0;
-	var t2 = Math.floor(t / cnt * 10000) / 10000
-	document.getElementById('runtime').innerHTML = "Solving "+cnt+" Sudokus in "+ t + " seconds (" + t2 + " sec / Sudoku)";
-	// solve the puzzle in the grid
-	var n_hints = 0;
-	s = ''
-	for (var i = 0; i < 81; ++i) { // get the sudoku string
-		var y = document.getElementById('C'+i).value
-		if (y >= 1 && y <= 9) {
-			s += ''+y;
-			++n_hints;
-		} else s += '.'
-	}
-	if (n_hints >= 15) { // enough hints
-		var x = solver(s)
-		if (x.length == 0) {
-			document.getElementById('9x9info').innerHTML = 'No solution'
-		} else {
-			for (var i = 0; i < 81; ++i)
-				document.getElementById('C'+i).value = x[0][i]
-			if (x.length == 1) document.getElementById('9x9info').innerHTML = 'Unique solution'
-			else document.getElementById('9x9info').innerHTML = 'Multiple solutions'
+		document.getElementById('text').value = v
+		var t = (new Date().getTime() - time_beg)/1000.0;
+		var t2 = Math.floor(t / cnt * 10000) / 10000
+		document.getElementById('runtime').innerHTML = "Solving "+cnt+" Sudokus in "+ t + " seconds (" + t2 + " sec / Sudoku)";
+		// solve the puzzle in the grid
+		var n_hints = 0;
+		s = ''
+		for (var i = 0; i < 81; ++i) { // get the sudoku string
+			var y = document.getElementById('C'+i).value
+			if (y >= 1 && y <= 9) {
+				s += ''+y;
+				++n_hints;
+			} else s += '.'
 		}
-	} else document.getElementById('9x9info').innerHTML = 'No less than 15 hints are required'
+		if (n_hints >= 15) { // enough hints
+			var x = solver(s)
+			if (x.length == 0) {
+				document.getElementById('9x9info').innerHTML = 'No solution'
+			} else {
+				for (var i = 0; i < 81; ++i)
+					document.getElementById('C'+i).value = x[0][i]
+				if (x.length == 1) document.getElementById('9x9info').innerHTML = 'Unique solution'
+				else document.getElementById('9x9info').innerHTML = 'Multiple solutions'
+			}
+		} else document.getElementById('9x9info').innerHTML = 'No less than 15 hints are required'
+	});
+
 }
 function strrep(a, t) { // repeat a string "a" for "t" times
 	var s = ''
@@ -110,20 +113,19 @@ function clear_input() {
 --></style>
 </head>
 <body onload="draw_9x9();">
-<h1>The Kudoku Sudoku Solver</h1>
-<p>The Kudoku Sudoku solver is probably the fastest Javascript solver to date.
-Although faster algorithms exist, they have not been ported to Javascript so far as I know. For more information
-on the Sudoku algorithms, see the <a href="http://en.wikipedia.org/wiki/Sudoku_algorithms">Wiki page</a>
-and my <a href="http://attractivechaos.wordpress.com/2011/06/19/an-incomplete-review-of-sudoku-solver-implementations/">blog post</a>.</p>
+<h1>Rust Sudoku Solver</h1>
+<p>The fastest sudoku algorithm to date is jczsolve (<a href="http://forum.enjoysudoku.com/3-77us-solver-2-8g-cpu-testcase-17sodoku-t30470-210.html#p249309">C source code</a>). This page uses an improved <a href="https://attractivechaos.github.io/plb/kudoku.html">implementation in Rust</a> that was compiled to wasm. This site is an adaption of <a href="https://attractivechaos.github.io/plb/kudoku.html">attractivechaos's web sudoku solver</a>, which used a javascript port of attractivechaos's own Kudoku solver.
+
+This wasm solver reaches roughly 50% of the native speed and is thus most likely the fastest sudoku web solver to date. For more information
+on Sudoku algorithms, see the <a href="http://en.wikipedia.org/wiki/Sudoku_algorithms">Wiki page</a>
+and attractivechaos's <a href="http://attractivechaos.wordpress.com/2011/06/19/an-incomplete-review-of-sudoku-solver-implementations/">blog post</a>. </p>
 <p>
-To use this solver, you may input multiple puzzles in the textarea or 
+To use this solver, you may input multiple puzzles in the textarea or
 one puzzle in the 9x9 grid, and then click the `Solve' button.
-Alternatively, you may select text in the textarea to fill the grid or 
+Alternatively, you may select text in the textarea to fill the grid or
 write the puzzle string in URL, for example
-like <a href="https://attractivechaos.github.io/plb/kudoku.html?q=.......12........3..23..4....18....5.6..7.8.......9.....85.....9...4.5..47...6...">this</a>. Example inputs are also provided.
-Note that solving `Hardest20x50' may take several to tens of seconds with Chrome, FireFox, Safari and Opera.
-IE6/7/8 may take far longer due to their crappy Javascript engine.</p>
-<p>All the HTML and Javascript source codes are distributed under <a href="http://en.wikipedia.org/wiki/MIT_License">the MIT open-source license</a>.</p>
+like <a href="https://attractivechaos.github.io/plb/kudoku.html?q=.......12........3..23..4....18....5.6..7.8.......9.....85.....9...4.5..47...6...">this</a>. Example inputs are also provided.</p>
+<p>The HTML source code is distributed under <a href="http://en.wikipedia.org/wiki/MIT_License">the MIT open-source license</a>. The solver's javascript and wasm is distributed under <a href="https://en.wikipedia.org/wiki/Affero_General_Public_License">the AGPLv3 open-source license</a>. </p>
 <p></p>
 Samples: <input value="Hardest20" onclick="document.getElementById('text').value=document.getElementById('hardest20').value;document.getElementById('runtime').innerHTML=''" type="button">
 <input value="Hardest20x50" onclick="document.getElementById('text').value=strrep(document.getElementById('hardest20').value,50);document.getElementById('runtime').innerHTML=''" type="button">
@@ -131,23 +133,110 @@ Samples: <input value="Hardest20" onclick="document.getElementById('text').value
 <table>
 <tbody><tr style="vertical-align: top">
 <td>
-<textarea rows="20" cols="85" id="text" onselect="set_9x9(this.value.substring(this.selectionStart,this.selectionEnd));">1.......2.9.4...5...6...7...5.9.3.......7.......85..4.7.....6...3...9.8...2.....1</textarea><br>
+<textarea rows="20" cols="85" id="text" onselect="set_9x9(this.value.substring(this.selectionStart,this.selectionEnd));">468931527751624839392578461134756298289413675675289314846192753513867942927345186
+728946315934251678516738249147593826369482157852167493293615784481379562675824931
+317849265245736891869512473456398712732164958981257634174925386693481527528673149
+768942315934651278512738649147593826329486157856127493693215784481379562275864931
+582743619963821547174956238621479853348562791795318426217635984439287165856194372
+482731659963852417175964238621579843358426791794318526217643985539287164846195372
+347516289258349176619872543591437628823961754476285931735198462182654397964723815
+745896132928431756361725849519683427274159368836247591652378914483912675197564283
+382514697145976832769238415421695378893147256657382941274853169936721584518469723
+857629413924318657361754928248167539793485162516932784689271345172543896435896271
+745896312928431756361527984519683427274159638836742591652378149193264875487915263
+819462375632751489547839612178543926324697158956128743763215894291384567485976231
+139648752758132964246795318461573289893426175527981436982357641674819523315264897
+679325148283741965451986327598263714124857639736419582912534876867192453345678291
+895476312426931857371528694569713428284659731137842569952387146713264985648195273
+827569413964318527351724968248157639793486152615932784589271346172643895436895271
+463957812927681345851324769386512974249736581715498236632845197594173628178269453
+681243597573896412429715638264937185318562974957481326796124853832659741145378269
+317584926526193847984762315672435198153829764849617253798246531265371489431958672
+857962413924318567361754298548127936793486152216539784689271345175643829432895671
+463957812927681345851324967386512794249736581715498236632845179594173628178269453
+598723641374816952612549837237961485186354729459278316745682193863195274921437568
+718925364935641278426738519167493825359286147842157693693514782281379456574862931
+895476132426931857371825946569713428284659371137248569952387614643192785718564293
+895476132426931857371528946569713428284659371137842569952387614613294785748165293
+239847561614592738785613924396475812871329456542168379427951683163784295958236147
+854926371326871954917543682789165423543297816162438795431782569675319248298654137
+714956832925831746368724519459683127271549368836217495642375981583192674197468253
+297543681435681927816927543129875436653419872748236195374158269562394718981762354
+845967132926431857371528649569713428284659371137842596752386914613294785498175263
+319624857562871943478395162721439586985762314643158729254983671197546238836217495
+714956382925831746368427951459683127271549638836712495642375819193268574587194263
+465389271827451396193267458278594613631872945954613782549136827786925134312748569
+253678419647931582918524736861459273439782165725163894592317648184296357376845921
+463758291179236548825491376247165983396842715518973624931687452684529137752314869
+584729163396148257127536849612893574753214986948657321239475618871962435465381792
+815674392426931857379528146561793428284156739937842561652387914743219685198465273
+851439627937652481246718359793841265684527193125963874368195742572384916419276538
+369841275854273619172659438521734986748962351936185724295316847483597162617428593
+842715963573962841196834257768591432235487196419623578687249315354178629921356784
+714596832925831746368427915459683127271945368836712459642379581193258674587164293
+598613472126475983347829165614597328852341796739268514963184257481752639275936841
+298456137156793248347812659564328971839571426721649583972134865485967312613285794
+486923157597461283231587946945732618678159324312846795869274531153698472724315869
+928576413674319528351824679249158736836497152715263894592681347183742965467935281
+712935486384621597596874123849312675235786914671459238953267841467198352128543769
+518263497672941853439875162387156924164729538295438671826394715751682349943517286
+259164738174398625386725914623957481791482563845613297918576342467231859532849176
+639752148287341965451986327598263714124875639376419582913524876862197453745638291
+167852493924173568538496721453719682712568349896234175241387956685941237379625814
+567492138239861745148375926623148579951736482874259361712983654396524817485617293
+463957812927681345851324769386512974249736581175498236632845197594173628718269453
+845697132926431857371825946569713428284956371137248569752389614493162785618574293
+647321598895467312213589476536712984978634125421958763164893257382175649759246831
+827639415954218637361754928248167359793485162516923784689571243175342896432896571
+863427951549361872217895463354982716786513294192674538431758629678239145925146387
+798635421126974583453218679972586314564123897381497256617352948835749162249861735
+584923167697541283231687954356792418978164325412835796845279631769318542123456879
+679143285453268197281759643715832964894516732362497851528674319946321578137985426
+413865972628791345957324168396572814241638597785419236532946781874153629169287453
+413865972628791345957324861396572184241638597785419236532946718874153629169287453
+178462935924531768365897412239718654857643291416259387791325846683174529542986173
+463598721928761453751234968376189542145327896289645317832456179597812634614973285
+863427951549361872217598463384952716756813294192674538431785629678239145925146387
+317564928428193567965782314872435196659817243143629785794256831286371459531948672
+491862375387195264265374891159236487632487519748951632923748156816529743574613928
+276845139415936728938127465764253981182769354359481672597312846821674593643598217
+712935486384621597596874123849312675235786914671459238463297851957168342128543769
+487312695593684271126597384735849162914265837268731549851476923379128456642953718
+463957812927681345851324967386512794249736581175498236632845179594173628718269453
+951476283284193567376258914835621749642937158719584326527869431498312675163745892
+824935671567412893193768542251693487938274156746851329472386915619547238385129764
+278359164694281573315467298829635417763142985541978326956714832432896751187523649
+561729348423681975897534261942173856135896724678452139256318497719245683384967512
+697315824384279516215468379728631495143952687569847231852194763431786952976523148
+798123645462758391315649287546297138921834756837561924153986472689472513274315869
+796834125812759634354216897289365741145978362673421958538647219427193586961582473
+813425679569817342742936815621354987987162534435789261294673158176598423358241796
+463598721928716453751243968376189542145372896289654317832465179597821634614937285
+927315864384276591615498372798631425143952687562847913856124739431789256279563148
+827659413964318257351724698248167935793485162615932784589271346176543829432896571
+698321745531847296274956813765213489149785362382469571426138957857692134913574628
+356128974471369825289475163512794386967832451843516792634287519795641238128953647
+175638942398724165462951873846395721751246389239187654924863517587419236613572498
+845697312926431857371528694569713428284956731137842569752389146613274985498165273
+498653712251879436736142895927318654684795123513426987142587369375961248869234571
+231576498576984213489123567892715346164832759357469821613247985725698134948351672
+</textarea><br>
 </td>
 <td style="padding: 0 2em;"><span id="9x9"><table class="table">
-<tbody><tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C0" value="1" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C1" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C2" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C3" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C4" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C5" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C6" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C7" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C8" value="2" type="text"></td></tr>
-<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C9" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C10" value="9" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C11" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C12" value="4" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C13" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C14" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C15" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C16" value="5" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C17" type="text"></td></tr>
-<tr><td class="cell3"><input class="input" size="1" maxlength="1" id="C18" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C19" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C20" value="6" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C21" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C22" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C23" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C24" value="7" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C25" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C26" type="text"></td></tr>
-<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C27" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C28" value="5" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C29" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C30" value="9" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C31" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C32" value="3" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C33" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C34" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C35" type="text"></td></tr>
-<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C36" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C37" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C38" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C39" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C40" value="7" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C41" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C42" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C43" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C44" type="text"></td></tr>
-<tr><td class="cell3"><input class="input" size="1" maxlength="1" id="C45" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C46" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C47" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C48" value="8" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C49" value="5" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C50" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C51" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C52" value="4" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C53" type="text"></td></tr>
-<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C54" value="7" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C55" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C56" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C57" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C58" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C59" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C60" value="6" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C61" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C62" type="text"></td></tr>
-<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C63" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C64" value="3" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C65" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C66" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C67" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C68" value="9" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C69" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C70" value="8" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C71" type="text"></td></tr>
-<tr><td class="cell3"><input class="input" size="1" maxlength="1" id="C72" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C73" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C74" value="2" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C75" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C76" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C77" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C78" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C79" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C80" value="1" type="text"></td></tr>
-</tbody></table></span><span id="9x9info" style="color: gray;">Input or select in the textarea to fill the grid</span></td>
+<tbody><tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C0" value="1" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C1" value="7" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C2" value="4" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C3" value="3" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C4" value="8" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C5" value="5" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C6" value="9" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C7" value="6" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C8" value="2" type="text"></td></tr>
+<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C9" value="2" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C10" value="9" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C11" value="3" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C12" value="4" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C13" value="6" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C14" value="7" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C15" value="1" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C16" value="5" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C17" value="8" type="text"></td></tr>
+<tr><td class="cell3"><input class="input" size="1" maxlength="1" id="C18" value="5" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C19" value="8" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C20" value="6" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C21" value="1" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C22" value="9" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C23" value="2" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C24" value="7" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C25" value="3" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C26" value="4" type="text"></td></tr>
+<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C27" value="4" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C28" value="5" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C29" value="1" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C30" value="9" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C31" value="2" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C32" value="3" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C33" value="8" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C34" value="7" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C35" value="6" type="text"></td></tr>
+<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C36" value="9" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C37" value="2" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C38" value="8" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C39" value="6" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C40" value="7" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C41" value="4" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C42" value="3" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C43" value="1" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C44" value="5" type="text"></td></tr>
+<tr><td class="cell3"><input class="input" size="1" maxlength="1" id="C45" value="3" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C46" value="6" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C47" value="7" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C48" value="8" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C49" value="5" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C50" value="1" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C51" value="2" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C52" value="4" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C53" value="9" type="text"></td></tr>
+<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C54" value="7" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C55" value="1" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C56" value="9" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C57" value="5" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C58" value="4" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C59" value="8" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C60" value="6" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C61" value="2" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C62" value="3" type="text"></td></tr>
+<tr><td class="cell2"><input class="input" size="1" maxlength="1" id="C63" value="6" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C64" value="3" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C65" value="5" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C66" value="2" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C67" value="1" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C68" value="9" type="text"></td><td class="cell2"><input class="input" size="1" maxlength="1" id="C69" value="4" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C70" value="8" type="text"></td><td class="cell"><input class="input" size="1" maxlength="1" id="C71" value="7" type="text"></td></tr>
+<tr><td class="cell3"><input class="input" size="1" maxlength="1" id="C72" value="8" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C73" value="4" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C74" value="2" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C75" value="7" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C76" value="3" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C77" value="6" type="text"></td><td class="cell3"><input class="input" size="1" maxlength="1" id="C78" value="5" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C79" value="9" type="text"></td><td class="cell1"><input class="input" size="1" maxlength="1" id="C80" value="1" type="text"></td></tr>
+</tbody></table></span><span id="9x9info" style="color: gray;">Unique solution</span></td>
 </tr>
 </tbody></table>
 <input value="Solve" onclick="solve();" type="button">&nbsp;<input value="Clear" onclick="clear_input();" type="button">&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;<span id="runtime" style="color: gray;"></span>
+&nbsp;&nbsp;&nbsp;<span id="runtime" style="color: gray;">Solving 87 Sudokus in 0.146 seconds (0.0016 sec / Sudoku)</span>
 
 <textarea id="hardest20" style="display: none">..............3.85..1.2.......5.7.....4...1...9.......5......73..2.1........4...9
 .......12........3..23..4....18....5.6..7.8.......9.....85.....9...4.5..47...6...
