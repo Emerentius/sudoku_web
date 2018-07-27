@@ -114,9 +114,9 @@ function clear_input() {
 </head>
 <body onload="draw_9x9();">
 <h1>Rust Sudoku Solver</h1>
-<p>The fastest sudoku algorithm to date is jczsolve (<a href="http://forum.enjoysudoku.com/3-77us-solver-2-8g-cpu-testcase-17sodoku-t30470-210.html#p249309">C source code</a>). This page uses an improved <a href="https://github.com/emerentius/sudoku">implementation in Rust</a> that was compiled to wasm. This site is an adaption of <a href="https://attractivechaos.github.io/plb/kudoku.html">attractivechaos's web sudoku solver</a>, which used a javascript port of attractivechaos's own Kudoku solver.
+<p>The fastest sudoku algorithm to date is jczsolve (<a href="http://forum.enjoysudoku.com/3-77us-solver-2-8g-cpu-testcase-17sodoku-t30470-210.html#p249309">C source code</a>). The solver on this page is <a href="https://github.com/emerentius/sudoku_web">compiled to WebAssembly</a> from a further optimized <a href="https://github.com/emerentius/sudoku">implementation in Rust</a>. The website's source code is from <a href="https://attractivechaos.github.io/plb/kudoku.html">attractivechaos's javascript solver</a> with minor adaptations.
 
-This wasm solver reaches roughly 50% of the native speed and is thus most likely the fastest sudoku web solver to date. For more information
+This wasm solver reaches roughly 50% of the native speed and is thus most likely the fastest web sudoku solver to date. For more information
 on Sudoku algorithms, see the <a href="http://en.wikipedia.org/wiki/Sudoku_algorithms">Wiki page</a>
 and attractivechaos's <a href="http://attractivechaos.wordpress.com/2011/06/19/an-incomplete-review-of-sudoku-solver-implementations/">blog post</a>. </p>
 <p>
