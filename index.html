@@ -113,8 +113,8 @@ function clear_input() {
 --></style>
 </head>
 <body onload="draw_9x9();">
-<h1>Rust Sudoku Solver</h1>
-<p>The fastest sudoku algorithm to date is jczsolve (<a href="http://forum.enjoysudoku.com/3-77us-solver-2-8g-cpu-testcase-17sodoku-t30470-210.html#p249309">C source code</a>). The solver on this page is <a href="https://github.com/emerentius/sudoku_web">compiled to WebAssembly</a> from a further optimized <a href="https://github.com/emerentius/sudoku">implementation in Rust</a>. The website's source code is from <a href="https://attractivechaos.github.io/plb/kudoku.html">attractivechaos's javascript solver</a> with minor adaptations.
+<h1>A Wasm Jczsolve Sudoku Solver</h1>
+<p>The fastest sudoku algorithm to date is jczsolve (<a href="http://forum.enjoysudoku.com/3-77us-solver-2-8g-cpu-testcase-17sodoku-t30470-210.html#p249309">C source code</a>, see linked thread for authors). The solver on this page is <a href="https://github.com/emerentius/sudoku_web">compiled to WebAssembly</a> from a further optimized <a href="https://github.com/emerentius/sudoku">implementation in Rust</a>. The website's source code is from <a href="https://attractivechaos.github.io/plb/kudoku.html">attractivechaos's javascript solver</a> with minor adaptations.
 
 This wasm solver reaches roughly 50% of the native speed and is thus most likely the fastest web sudoku solver to date. For more information
 on Sudoku algorithms, see the <a href="http://en.wikipedia.org/wiki/Sudoku_algorithms">Wiki page</a>
@@ -125,7 +125,7 @@ one puzzle in the 9x9 grid, and then click the `Solve' button.
 Alternatively, you may select text in the textarea to fill the grid or
 write the puzzle string in URL, for example
 like <a href="https://attractivechaos.github.io/plb/kudoku.html?q=.......12........3..23..4....18....5.6..7.8.......9.....85.....9...4.5..47...6...">this</a>. Example inputs are also provided.</p>
-<p>The HTML source code is distributed under <a href="http://en.wikipedia.org/wiki/MIT_License">the MIT open-source license</a>. The solver's javascript and wasm is distributed under <a href="https://en.wikipedia.org/wiki/Affero_General_Public_License">the AGPLv3 open-source license</a>. </p>
+<p>The HTML source code is distributed under <a href="http://en.wikipedia.org/wiki/MIT_License">the MIT open-source license</a>. The Rust solver is licensed under <a href="https://en.wikipedia.org/wiki/Affero_General_Public_License">the AGPLv3 open-source license</a> with permission from the original authors. The wasm and js for the solver are licensed the same. </p>
 <p></p>
 Samples: <input value="Hardest20" onclick="document.getElementById('text').value=document.getElementById('hardest20').value;document.getElementById('runtime').innerHTML=''" type="button">
 <input value="Hardest20x50" onclick="document.getElementById('text').value=strrep(document.getElementById('hardest20').value,50);document.getElementById('runtime').innerHTML=''" type="button">
