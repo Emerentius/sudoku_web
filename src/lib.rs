@@ -17,5 +17,5 @@ fn solve(string: &str) -> Vec<Vec<u8>> {
         .map(|solution|
             solution.to_bytes().to_vec()
         )
-        .collect::<Vec<_>>()
+        .collect()
 }
