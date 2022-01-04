@@ -8,14 +8,25 @@ use stdweb::js_export;
 use sudoku::Sudoku;
 
 #[js_export]
-fn solve(string: &str) -> Vec<Vec<u8>> {
-    let sudoku = Sudoku::from_str_line(string);
+fn solve(grid: &str) -> Vec<Vec<u8>> {
+    let sudoku = Sudoku::new();
 
-    sudoku.ok()
-        .map_or(vec![], |sud| sud.solve_at_most(2))
-        .into_iter()
-        .map(|solution|
-            solution.to_bytes().to_vec()
-        )
-        .collect()
+    let solution = sudoku.solve(grid);
+    if solution.is_none() {
+        return vec![];
+    }
+
+    let solution = solution.unwrap();
+
+    let output: Vec<Vec<u8>> = vec![];
+    for i in 0..9 {
+        let intermediate: Vec<u8> = vec![];
+        for j in 0..9 {
+            let digit = solution[(i * 9) + j].first().unwrap() as u8;
+            intermediate.push(digit);
+        }
+        output.push(intermediate);
+    }
+
+    output
 }
