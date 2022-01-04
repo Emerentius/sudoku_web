@@ -7,5 +7,5 @@ authors = ["Martin-Louis Bright <mlbright@gmail.com>"]
 crate-type = ["cdylib"]
 
 [dependencies]
-stdweb = "0.4.8"
+stdweb = "0.4.20"
 sudoku = { git = "https://github.com/mlbright/sudoku-norvig-rs" }
