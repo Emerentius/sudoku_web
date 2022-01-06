@@ -15,13 +15,23 @@ fn solve(grid: &str) -> Vec<Vec<u8>> {
     }
 
     let solution = solution.unwrap();
+    let solution_chars: Vec<char> = sudoku.format_grid(&solution).chars().collect();
+
+    if solution_chars.len() != 81 {
+        return vec![];
+    }
 
     let mut output: Vec<Vec<u8>> = vec![];
     for i in 0..9 {
         let mut intermediate: Vec<u8> = vec![];
         for j in 0..9 {
-            let digit = solution[(i * 9) + j].first().unwrap() as u8;
-            intermediate.push(digit);
+            let digit_as_char = solution_chars[(i*9) + j];
+            let digit = digit_as_char.to_digit(10);
+            if digit.is_none() {
+                return vec![];
+            }
+            let digit = digit.unwrap();
+            intermediate.push(digit as u8);
         }
         output.push(intermediate);
     }
