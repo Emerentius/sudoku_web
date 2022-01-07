@@ -9,6 +9,5 @@ crate-type = ["cdylib"]
 [dependencies]
 stdweb = "0.4.20"
 sudoku = { git = "https://github.com/mlbright/sudoku-norvig-rs" }
-
-[profile.release]
-debug = true
+wasm-bindgen = "0.2.78"
+web-sys = { version = "0.3.55", features = ['console'] }
