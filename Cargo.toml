@@ -11,3 +11,4 @@ stdweb = "0.4.20"
 sudoku = { git = "https://github.com/mlbright/sudoku-norvig-rs" }
 wasm-bindgen = "0.2.78"
 web-sys = { version = "0.3.55", features = ['console'] }
+console_error_panic_hook = "0.1.7"
