@@ -3,12 +3,14 @@ extern crate stdweb;
 extern crate sudoku;
 // extern crate web_sys;
 // extern crate wasm_bindgen;
+extern crate console_error_panic_hook;
 
 use stdweb::js_export;
 use sudoku::Sudoku;
 
 #[js_export]
 fn solve(grid: &str) -> Vec<Vec<u8>> {
+    console_error_panic_hook::set_once();
     let sudoku = Sudoku::new();
     let mut solutions: Vec<Vec<u8>> = vec![];
     // web_sys::console::log_1(&"Before solving...".into());
