@@ -9,3 +9,6 @@ crate-type = ["cdylib"]
 [dependencies]
 stdweb = "0.4.20"
 sudoku = { git = "https://github.com/mlbright/sudoku-norvig-rs" }
+
+[profile.release]
+debug = true
