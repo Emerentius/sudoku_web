@@ -3,87 +3,22 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<title>Rust Webassembly Sudoku Solver</title>
+	<script defer src="index.js"></script>
 	<script type="module" language="javascript" src="pkg/sudoku_web.js"></script>
 	<script type="module">
 		import init, {solver} from './pkg/sudoku_web.js';
 		async function run() {
-        // First up we need to actually load the wasm file, so we use the
-        // default export to inform it where the wasm file is located on the
-        // server, and then we wait on the returned promise to wait for the
-        // wasm to be loaded.
-        //
-        // It may look like this: `await init('./pkg/without_a_bundler_bg.wasm');`,
-        // but there is also a handy default inside `init` function, which uses
-        // `import.meta` to locate the wasm file relatively to js file.
-        //
-        // Note that instead of a string you can also pass in any of the
-        // following things:
-        //
-        // * `WebAssembly.Module`
-        //
-        // * `ArrayBuffer`
-        //
-        // * `Response`
-        //
-        // * `Promise` which returns any of the above, e.g. `fetch("./path/to/wasm")`
-        //
-        // This gives you complete control over how the module is loaded
-        // and compiled.
-        //
-        // Also note that the promise, when resolved, yields the wasm module's
-        // exports which is the same as importing the `*_bg` module in other
-        // modes
-        await init();
+			await init();
 
-        // And afterwards we can use all the functionality defined in wasm.
-        const result = solver(".......12........3..23..4....18....5.6..7.8.......9.....85.....9...4.5..47...6...");
-        console.log(`holy crap: ${result}`);
-        if (result !== "839465712146782953752391486391824675564173829287659341628537194913248567475916238")
-          throw new Error("wasm addition doesn't work!");
+        	// And afterwards we can use all the functionality defined in wasm.
+        	const result = solver("1.......2.9.4...5...6...7...5.9.3.......7.......85..4.7.....6...3...9.8...2.....1");
+        	console.log(`solution: ${result}`);
+        	if (result !== "174385962293467158586192734451923876928674315367851249719548623635219487842736591") {
+				throw new Error("wasm addition doesn't work!");
+			}
 		}
 		await run();
-		console.log("after run func");
-function solve() {
-	// solve the puzzles in the textarea
-	var s = document.getElementById('text').value.split("\n")
-	var v = '', time_beg = new Date().getTime(), cnt = 0;
-	for (var i = 0; i < s.length; ++i) {
-		if (s[i].length >= 81) {
-			alert("before x");
-			var x = solver(s[i])
-			alert(x);
-			v += x + "\n" // output the first solution only
-			++cnt;
-		}
-	}
-	document.getElementById('text').value = v
-	var t = (new Date().getTime() - time_beg) / 1000.0;
-	var t2 = Math.floor(t / cnt * 10000) / 10000
-	document.getElementById('runtime').innerHTML = "Solving " + cnt + " Sudokus in " + t + " seconds (" + t2 + " sec / Sudoku)";
-	// solve the puzzle in the grid
-	var n_hints = 0;
-	s = ''
-	for (var i = 0; i < 81; ++i) { // get the sudoku string
-		var y = document.getElementById('C' + i).value
-		if (y >= 1 && y <= 9) {
-			s += '' + y;
-			++n_hints;
-		} else s += '.'
-	}
-	if (n_hints >= 15) { // enough hints
-		var x = solver(s)
-		if (x.length == 0) {
-			document.getElementById('9x9info').innerHTML = 'No solution'
-		} else {
-			for (var i = 0; i < 81; ++i)
-				document.getElementById('C' + i).value = x[0][i]
-			if (x.length == 1) document.getElementById('9x9info').innerHTML = 'Unique solution'
-			else document.getElementById('9x9info').innerHTML = 'Multiple solutions'
-		}
-	} else document.getElementById('9x9info').innerHTML = 'No less than 15 hints are required'
-}
 	</script> 
-	<script defer src="index.js"></script>
 	<link rel="stylesheet" href="index.css">
 </head>
 

@@ -5,9 +5,7 @@ function solve() {
 	var v = '', time_beg = new Date().getTime(), cnt = 0;
 	for (var i = 0; i < s.length; ++i) {
 		if (s[i].length >= 81) {
-			alert("before x");
 			var x = solver(s[i])
-			alert(x);
 			v += x + "\n" // output the first solution only
 			++cnt;
 		}
