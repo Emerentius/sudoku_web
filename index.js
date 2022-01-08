@@ -1,13 +1,20 @@
+// Note that a dynamic `import` statement here is required due to
+// webpack/webpack#6615, but in theory `import { greet } from './pkg';`
+// will work here one day as well!
+const rust = import('./pkg/sudoku_web.js');
+
 function solve() {
-	Rust.sudoku_web.then(function (sudoku_web) {
-		// var solver = sudoku_web.solve;
+	rust.then(function (s) {
+		var solver = s.solve;
 		// solve the puzzles in the textarea
 		var s = document.getElementById('text').value.split("\n")
 		var v = '', time_beg = new Date().getTime(), cnt = 0;
 		for (var i = 0; i < s.length; ++i) {
 			if (s[i].length >= 81) {
-				var x = solver(s[i])
-				v += x[0].join('') + "\n" // output the first solution only
+				alert("before x");
+				var x = solver(s[i] + "\n")
+				alert(x);
+				v += x + "\n" // output the first solution only
 				++cnt;
 			}
 		}
@@ -36,8 +43,7 @@ function solve() {
 				else document.getElementById('9x9info').innerHTML = 'Multiple solutions'
 			}
 		} else document.getElementById('9x9info').innerHTML = 'No less than 15 hints are required'
-	});
-
+	}).catch(console.error);
 }
 
 function strrep(a, t) { // repeat a string "a" for "t" times
