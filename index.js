@@ -1,3 +1,4 @@
+console.log("after module load");
 function solve() {
 	// solve the puzzles in the textarea
 	var s = document.getElementById('text').value.split("\n")
