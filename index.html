@@ -6,23 +6,6 @@
 	<title>Rust Webassembly Sudoku Solver</title>
 	<script src="./pkg/sudoku_web.js"></script>
 	<script src="index.js"></script>
-	<!--
-	<script type="module" language="javascript" src="./pkg/sudoku_web.js"></script>
-	<script type="module">
-		import init, {solver} from './pkg/sudoku_web.js';
-		async function run() {
-			await init();
-
-        	// And afterwards we can use all the functionality defined in wasm.
-        	const result = solver("1.......2.9.4...5...6...7...5.9.3.......7.......85..4.7.....6...3...9.8...2.....1");
-        	console.log(`solution: ${result}`);
-        	if (result !== "174385962293467158586192734451923876928674315367851249719548623635219487842736591") {
-				throw new Error("wasm addition doesn't work!");
-			}
-		}
-		await run();
-	</script> 
-	-->
 	<link rel="stylesheet" href="index.css">
 </head>
 

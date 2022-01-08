@@ -1,30 +1,13 @@
-console.log("after module load");
-// const module = import(`./pkg/sudoku_web.js`);
-// let solver;
-
-// function loadWebAssembly(fileName) {
-//   return fetch(fileName)
-//     .then(response => response.arrayBuffer())
-//     .then(buffer => WebAssembly.compile(buffer))
-//     .then(module => {return new WebAssembly.Instance(module) });
-// };
-
-// loadWebAssembly('./pkg/sudoku_web_bg.wasm')
-//   .then(instance => {
-//     solver = instance.exports.solver;
-//     console.log('Finished compiling! Ready when you are...');
-//   }); 
-
 const { solver } = wasm_bindgen;
 
 async function run() {
 	await wasm_bindgen('./pkg/sudoku_web_bg.wasm');
 
-	const result = solver("1.......2.9.4...5...6...7...5.9.3.......7.......85..4.7.....6...3...9.8...2.....1");
-	console.log(`solution: ${result}`);
-	if (result !== "174385962293467158586192734451923876928674315367851249719548623635219487842736591") {
-		throw new Error("wasm addition doesn't work!");
-	}
+	// const result = solver("1.......2.9.4...5...6...7...5.9.3.......7.......85..4.7.....6...3...9.8...2.....1");
+	// console.log(`solution: ${result}`);
+	// if (result !== "174385962293467158586192734451923876928674315367851249719548623635219487842736591") {
+	// 	throw new Error("wasm addition doesn't work!");
+	// }
 }
 
 run();
@@ -35,7 +18,8 @@ function solve() {
 	var v = '', time_beg = new Date().getTime(), cnt = 0;
 	for (var i = 0; i < s.length; ++i) {
 		if (s[i].length >= 81) {
-			var x = solver(s[i])
+			var solution = solver(s[i]);
+			var x = [solution];
 			v += x + "\n" // output the first solution only
 			++cnt;
 		}
@@ -55,7 +39,8 @@ function solve() {
 		} else s += '.'
 	}
 	if (n_hints >= 15) { // enough hints
-		var x = solver(s)
+		var solution = solver(s);
+		var x = [solution];
 		if (x.length == 0) {
 			document.getElementById('9x9info').innerHTML = 'No solution'
 		} else {

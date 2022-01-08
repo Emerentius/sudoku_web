@@ -4,5 +4,11 @@ This is a fork of https://emerentius.github.io/sudoku_web/, which itself is adap
 
 I wanted to test my own [Sudoku solver library][lib], which is slower than [emerentius's][emerentius], so prefer his to mine.
 
+## Build
+
+```bash
+wasm-pack build --target no-modules
+```
+
 [lib]: https://github.com/mlbright/sudoku-norvig-rs
 [emerentius]: https://github.com/Emerentius/sudoku
