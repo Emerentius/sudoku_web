@@ -1,19 +1,33 @@
 console.log("after module load");
 // const module = import(`./pkg/sudoku_web.js`);
-let solver;
+// let solver;
 
-function loadWebAssembly(fileName) {
-  return fetch(fileName)
-    .then(response => response.arrayBuffer())
-    .then(buffer => WebAssembly.compile(buffer))
-    .then(module => {return new WebAssembly.Instance(module) });
-};
-  
-loadWebAssembly('./pkg/sudoku_web_bg.wasm')
-  .then(instance => {
-    solver = instance.exports.solver;
-    console.log('Finished compiling! Ready when you are...');
-  }); 
+// function loadWebAssembly(fileName) {
+//   return fetch(fileName)
+//     .then(response => response.arrayBuffer())
+//     .then(buffer => WebAssembly.compile(buffer))
+//     .then(module => {return new WebAssembly.Instance(module) });
+// };
+
+// loadWebAssembly('./pkg/sudoku_web_bg.wasm')
+//   .then(instance => {
+//     solver = instance.exports.solver;
+//     console.log('Finished compiling! Ready when you are...');
+//   }); 
+
+const { solver } = wasm_bindgen;
+
+async function run() {
+	await wasm_bindgen('./pkg/sudoku_web_bg.wasm');
+
+	const result = solver("1.......2.9.4...5...6...7...5.9.3.......7.......85..4.7.....6...3...9.8...2.....1");
+	console.log(`solution: ${result}`);
+	if (result !== "174385962293467158586192734451923876928674315367851249719548623635219487842736591") {
+		throw new Error("wasm addition doesn't work!");
+	}
+}
+
+run();
 
 function solve() {
 	// solve the puzzles in the textarea
