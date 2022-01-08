@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 use sudoku::Sudoku;
 
 #[wasm_bindgen]
-pub fn solve(grid: &str) -> String {
+pub fn solver(grid: &str) -> String {
     let sudoku = Sudoku::new();
     let solution = sudoku.solve(grid);
     if solution.is_some() {
