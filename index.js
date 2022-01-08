@@ -1,4 +1,20 @@
 console.log("after module load");
+// const module = import(`./pkg/sudoku_web.js`);
+let solver;
+
+function loadWebAssembly(fileName) {
+  return fetch(fileName)
+    .then(response => response.arrayBuffer())
+    .then(buffer => WebAssembly.compile(buffer))
+    .then(module => {return new WebAssembly.Instance(module) });
+};
+  
+loadWebAssembly('./pkg/sudoku_web_bg.wasm')
+  .then(instance => {
+    solver = instance.exports.solver;
+    console.log('Finished compiling! Ready when you are...');
+  }); 
+
 function solve() {
 	// solve the puzzles in the textarea
 	var s = document.getElementById('text').value.split("\n")
