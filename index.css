@@ -1,0 +1,64 @@
+body,
+td,
+p {
+	font: 12px "Lucida Grande", "Lucida Sans Unicode", Arial, sans-serif;
+}
+
+textarea {
+	font: 100% "consolas", "Andale Mono", Monaco, Courier, monospace;
+	border: 1px solid;
+}
+
+a,
+a:visited {
+	color: blue;
+}
+
+a:hover {
+	color: red;
+}
+
+.input {
+	border: 0px;
+	width: 2em;
+	height: 2em;
+	text-align: center;
+}
+
+.cell {
+	width: 1em;
+	height: 1em;
+	border-bottom: 1px solid;
+	border-left: 1px solid;
+	padding: 0.3em
+}
+
+.cell1 {
+	width: 1em;
+	height: 1em;
+	border-bottom: 2px solid;
+	border-left: 1px solid;
+	padding: 0.3em
+}
+
+.cell2 {
+	width: 1em;
+	height: 1em;
+	border-bottom: 1px solid;
+	border-left: 2px solid;
+	padding: 0.3em
+}
+
+.cell3 {
+	width: 1em;
+	height: 1em;
+	border-bottom: 2px solid;
+	border-left: 2px solid;
+	padding: 0.3em
+}
+
+.table {
+	border-top: 2px solid;
+	border-right: 2px solid;
+	border-collapse: collapse
+}
