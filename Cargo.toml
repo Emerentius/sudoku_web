@@ -8,5 +8,6 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasm-bindgen = "0.2.78"
+wasm-bindgen = "0.2"
 sudoku = { git = "https://github.com/mlbright/sudoku-norvig-rs" }
+js-sys = "0.3.55"
