@@ -6,7 +6,42 @@
 	<script type="module" language="javascript" src="pkg/sudoku_web.js"></script>
 	<script type="module">
 		import init, {solver} from './pkg/sudoku_web.js';
-		await init();
+		async function run() {
+        // First up we need to actually load the wasm file, so we use the
+        // default export to inform it where the wasm file is located on the
+        // server, and then we wait on the returned promise to wait for the
+        // wasm to be loaded.
+        //
+        // It may look like this: `await init('./pkg/without_a_bundler_bg.wasm');`,
+        // but there is also a handy default inside `init` function, which uses
+        // `import.meta` to locate the wasm file relatively to js file.
+        //
+        // Note that instead of a string you can also pass in any of the
+        // following things:
+        //
+        // * `WebAssembly.Module`
+        //
+        // * `ArrayBuffer`
+        //
+        // * `Response`
+        //
+        // * `Promise` which returns any of the above, e.g. `fetch("./path/to/wasm")`
+        //
+        // This gives you complete control over how the module is loaded
+        // and compiled.
+        //
+        // Also note that the promise, when resolved, yields the wasm module's
+        // exports which is the same as importing the `*_bg` module in other
+        // modes
+        await init();
+
+        // And afterwards we can use all the functionality defined in wasm.
+        const result = solver(".......12........3..23..4....18....5.6..7.8.......9.....85.....9...4.5..47...6...");
+        console.log(`holy crap: ${result}`);
+        if (result !== "839465712146782953752391486391824675564173829287659341628537194913248567475916238")
+          throw new Error("wasm addition doesn't work!");
+		}
+		run();
 	</script> 
 	<script language="javascript" defer src="index.js"></script>
 	<link rel="stylesheet" href="index.css">

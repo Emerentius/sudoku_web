@@ -7,10 +7,8 @@ pub fn solver(grid: &str) -> String {
     let solution = sudoku.solve(grid);
     if solution.is_some() {
         let solution = solution.unwrap();
-        // sudoku.format_grid(&solution).into();
-        String::from("839465712146782953752391486391824675564173829287659341628537194913248567475916238").into()
+        sudoku.format_grid(&solution).into()
     } else {
-        // String::from("").into()
-        String::from("839465712146782953752391486391824675564173829287659341628537194913248567475916238").into()
+        String::from("").into()
     }
 }
